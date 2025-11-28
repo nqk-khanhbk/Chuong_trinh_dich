@@ -20,19 +20,22 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "error.h"
 #include "scanner.c"
 
 int main(int argc, char *argv[]) {
+  // kiem tra tham so dau vao
   if (argc <= 1) {
     printf("scanner: no input file.\n");
     return -1;
   }
 
+  // thuc hien quet,neu gap loi thi thong bao va thoat
   if (scan(argv[1]) == IO_ERROR) {
     printf("Can\'t read input file!\n");
     return -1;
   }
+  // error(10,1,1);
     
   return 0;
 }
