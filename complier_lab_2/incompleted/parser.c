@@ -1,4 +1,4 @@
-/* 
+/*
  * @copyright (c) 2008, Hedspi, Hanoi University of Technology
  * @author Huu-Duc Nguyen
  * @version 1.0
@@ -12,101 +12,120 @@
 #include "error.h"
 
 Token *currentToken; // token hien tai
-Token *lookAhead; // token kế tiếp
+Token *lookAhead;    // token kế tiếp
 
 // ham khoi dong trinh phan tich
-void scan(void) {
-  Token* tmp = currentToken;
+void scan(void)
+{
+  Token *tmp = currentToken;
   currentToken = lookAhead;
   lookAhead = getValidToken();
   free(tmp);
 }
 
 // kiem tra va tieu thu mot token
-void eat(TokenType tokenType) {
+void eat(TokenType tokenType)
+{
   // kiem tra token hien tai co phai la tokenType khong
-  if (lookAhead->tokenType == tokenType) {
+  if (lookAhead->tokenType == tokenType)
+  {
     printToken(lookAhead); // in token
-    scan(); // di chuyen den token ke tiep
-  } 
-  else missingToken(tokenType, lookAhead->lineNo, lookAhead->colNo); // xu ly loi
+    scan();                // di chuyen den token ke tiep
+  }
+  else
+    missingToken(tokenType, lookAhead->lineNo, lookAhead->colNo); // xu ly loi
 }
 
 // chuyen doi chuong trinh
-void compileProgram(void) {
+void compileProgram(void)
+{
   // bat dau phan tich
   assert("Parsing a Program ....");
-  eat(KW_PROGRAM); // tieu thu tu khoa program
-  eat(TK_IDENT);  // tieu thu ten chuong trinh
+  eat(KW_PROGRAM);   // tieu thu tu khoa program
+  eat(TK_IDENT);     // tieu thu ten chuong trinh
   eat(SB_SEMICOLON); // tieu thu dau cham phay
-  compileBlock(); // phan tich khoi
+  compileBlock();    // phan tich khoi
   eat(SB_PERIOD);
   assert("Program parsed!");
 }
 
 // phan tich mot khoi
-void compileBlock(void) {
+void compileBlock(void)
+{
   assert("Parsing a Block ....");
   // phan tich khai bao hang so
-  if (lookAhead->tokenType == KW_CONST) {
+  if (lookAhead->tokenType == KW_CONST)
+  {
     eat(KW_CONST);
     compileConstDecl();
     compileConstDecls();
     compileBlock2();
-  } 
+  }
   // khong co khai bao hang so
-  else compileBlock2();
+  else
+    compileBlock2();
   assert("Block parsed!");
 }
 
 // phan tich khoi tiep theo
-void compileBlock2(void) {
+void compileBlock2(void)
+{
   // phan tich khai bao kieu
-  if (lookAhead->tokenType == KW_TYPE) {
+  if (lookAhead->tokenType == KW_TYPE)
+  {
     eat(KW_TYPE);
     compileTypeDecl();
     compileTypeDecls();
     compileBlock3();
-  } 
-  else compileBlock3();
+  }
+  else
+    compileBlock3();
 }
 
 // phan tich khoi tiep theo
-void compileBlock3(void) {
+void compileBlock3(void)
+{
   // phan tich khai bao bien
-  if (lookAhead->tokenType == KW_VAR) {
+  if (lookAhead->tokenType == KW_VAR)
+  {
     eat(KW_VAR);
-    compileVarDecl(); // phan tich khai bao bien dau tien
+    compileVarDecl();  // phan tich khai bao bien dau tien
     compileVarDecls(); // phan tich cac khai bao bien tiep theo
-    compileBlock4(); // phan tich khoi tiep theo
-  } 
-  else compileBlock4();
+    compileBlock4();   // phan tich khoi tiep theo
+  }
+  else
+    compileBlock4();
 }
 
 // phan tich khoi tiep theo
-void compileBlock4(void) {
+void compileBlock4(void)
+{
   compileSubDecls(); // phan tich cac khai bao thu tuc/ ham
   compileBlock5();
 }
 
 // phan tich khoi cuoi cung
-void compileBlock5(void) {
+void compileBlock5(void)
+{
   eat(KW_BEGIN);
   compileStatements(); // phan tich cac cau lenh
   eat(KW_END);
 }
 
 // phan tich cac khai bao hang so
-void compileConstDecls(void) {
+void compileConstDecls(void)
+{
   // neu con khai bao hang so
-  if (lookAhead->tokenType == TK_IDENT) {
+  if (lookAhead->tokenType == TK_IDENT)
+  {
     compileConstDecl();
     compileConstDecls();
   }
 }
 
 // phan tich mot khai bao hang so
-void compileConstDecl(void) {
+void compileConstDecl(void)
+{
   eat(TK_IDENT);
   eat(SB_EQ);
   compileConstant();
@@ -114,15 +133,18 @@ void compileConstDecl(void) {
 }
 
 // phan tich cac khai bao kieu
-void compileTypeDecls(void) {
-  if (lookAhead->tokenType == TK_IDENT) {
+void compileTypeDecls(void)
+{
+  if (lookAhead->tokenType == TK_IDENT)
+  {
     compileTypeDecl();
     compileTypeDecls();
   }
 }
 
 // phan tich mot khai bao kieu
-void compileTypeDecl(void) {
+void compileTypeDecl(void)
+{
   eat(TK_IDENT);
   eat(SB_EQ);
   compileType();
@@ -130,15 +152,18 @@ void compileTypeDecl(void) {
 }
 
 // phan tich cac khai bao bien
-void compileVarDecls(void) {
-  if (lookAhead->tokenType == TK_IDENT) {
+void compileVarDecls(void)
+{
+  if (lookAhead->tokenType == TK_IDENT)
+  {
     compileVarDecl();
     compileVarDecls();
   }
 }
 
 // phan tich mot khai bao bien
-void compileVarDecl(void) {
+void compileVarDecl(void)
+{
   eat(TK_IDENT);
   eat(SB_COLON);
   compileType();
@@ -146,14 +171,17 @@ void compileVarDecl(void) {
 }
 
 // phan tich cac khai bao thu tuc/ ham
-void compileSubDecls(void) {
+void compileSubDecls(void)
+{
   assert("Parsing subtoutines ....");
   // neu con khai bao ham/ thu tuc
-  if (lookAhead->tokenType == KW_FUNCTION){
+  if (lookAhead->tokenType == KW_FUNCTION)
+  {
     compileFuncDecl();
     compileSubDecls();
-  } 
-  else if(lookAhead->tokenType == KW_PROCEDURE){
+  }
+  else if (lookAhead->tokenType == KW_PROCEDURE)
+  {
     compileProcDecl();
     compileSubDecls();
   }
@@ -161,7 +189,8 @@ void compileSubDecls(void) {
 }
 
 // phan tich mot khai bao ham
-void compileFuncDecl(void) {
+void compileFuncDecl(void)
+{
   assert("Parsing a function ....");
   eat(KW_FUNCTION);
   eat(TK_IDENT);
@@ -175,7 +204,8 @@ void compileFuncDecl(void) {
 }
 
 // phan tich mot khai bao thu tuc
-void compileProcDecl(void) {
+void compileProcDecl(void)
+{
   assert("Parsing a procedure ....");
   eat(KW_PROCEDURE);
   eat(TK_IDENT);
@@ -187,40 +217,58 @@ void compileProcDecl(void) {
 }
 
 // phan tich mot hang so khong dau
-void compileUnsignedConstant(void) {
-  if (lookAhead->tokenType == TK_NUMBER) {
+void compileUnsignedConstant(void)
+{
+  if (lookAhead->tokenType == TK_NUMBER)
+  {
     eat(TK_NUMBER);
-  } else if (lookAhead->tokenType == TK_CHAR) {
+  }
+  else if (lookAhead->tokenType == TK_CHAR)
+  {
     eat(TK_CHAR);
-  } else if (lookAhead->tokenType == TK_IDENT) {
+  }
+  else if (lookAhead->tokenType == TK_IDENT)
+  {
     eat(TK_IDENT);
   }
 }
 
 // phan tich mot hang so
-void compileConstant(void) {
-  if (lookAhead->tokenType == SB_MINUS || lookAhead->tokenType == SB_PLUS) {
+void compileConstant(void)
+{
+  if (lookAhead->tokenType == SB_MINUS || lookAhead->tokenType == SB_PLUS)
+  {
     eat(lookAhead->tokenType);
     compileConstant2();
-  } else if (lookAhead->tokenType == TK_CHAR) {
+  }
+  else if (lookAhead->tokenType == TK_CHAR)
+  {
     eat(TK_CHAR);
-  } else {
+  }
+  else
+  {
     compileConstant2();
   }
 }
 
 // phan tich phan con lai cua hang so
-void compileConstant2(void) {
-  if (lookAhead->tokenType == TK_IDENT || lookAhead->tokenType == TK_NUMBER) {
+void compileConstant2(void)
+{
+  if (lookAhead->tokenType == TK_IDENT || lookAhead->tokenType == TK_NUMBER)
+  {
     eat(lookAhead->tokenType);
   }
 }
 
 //
-void compileType(void) {
-  if (lookAhead->tokenType == KW_INTEGER || lookAhead->tokenType == KW_CHAR || lookAhead->tokenType == TK_IDENT) {
+void compileType(void)
+{
+  if (lookAhead->tokenType == KW_INTEGER || lookAhead->tokenType == KW_CHAR || lookAhead->tokenType == TK_IDENT)
+  {
     eat(lookAhead->tokenType);
-  } else if (lookAhead->tokenType == KW_ARRAY) {
+  }
+  else if (lookAhead->tokenType == KW_ARRAY)
+  {
     eat(KW_ARRAY);
     eat(SB_LSEL);
     eat(TK_NUMBER);
@@ -230,14 +278,20 @@ void compileType(void) {
   }
 }
 
-void compileBasicType(void) {
-  if (lookAhead->tokenType == KW_INTEGER || lookAhead->tokenType == KW_CHAR) {
+// phan tich mot kieu co ban
+void compileBasicType(void)
+{
+  if (lookAhead->tokenType == KW_INTEGER || lookAhead->tokenType == KW_CHAR)
+  {
     eat(lookAhead->tokenType);
   }
 }
 
-void compileParams(void) {
-  if (lookAhead->tokenType == SB_LPAR) {
+// phan tich danh sach tham so
+void compileParams(void)
+{
+  if (lookAhead->tokenType == SB_LPAR)
+  {
     eat(SB_LPAR);
     compileParam();
     compileParams2();
@@ -245,20 +299,28 @@ void compileParams(void) {
   }
 }
 
-void compileParams2(void) {
-  if (lookAhead->tokenType == SB_SEMICOLON) {
+// phan tich phan con lai cua danh sach tham so
+void compileParams2(void)
+{
+  if (lookAhead->tokenType == SB_SEMICOLON)
+  {
     eat(SB_SEMICOLON);
     compileParam();
     compileParams2();
   }
 }
 
-void compileParam(void) {
-  if (lookAhead->tokenType == TK_IDENT) {
+// phan tich mot tham so
+void compileParam(void)
+{
+  if (lookAhead->tokenType == TK_IDENT)
+  {
     eat(TK_IDENT);
     eat(SB_COLON);
     compileBasicType();
-  } else if (lookAhead->tokenType == KW_VAR) {
+  }
+  else if (lookAhead->tokenType == KW_VAR)
+  {
     eat(KW_VAR);
     eat(TK_IDENT);
     eat(SB_COLON);
@@ -266,43 +328,65 @@ void compileParam(void) {
   }
 }
 
-void compileStatements(void) {
+// phan tich cac cau lenh
+void compileStatements(void)
+{
   compileStatement();
   compileStatements2();
 }
 
-void compileStatements2(void) {
-  if (lookAhead->tokenType == SB_SEMICOLON) {
+// phan tich phan con lai cua cac cau lenh
+void compileStatements2(void)
+{
+  if (lookAhead->tokenType == SB_SEMICOLON)
+  {
     eat(SB_SEMICOLON);
     compileStatement();
     compileStatements2();
-  } else if (lookAhead->tokenType == TK_IDENT || 
-             lookAhead->tokenType == KW_CALL ||
-             lookAhead->tokenType == KW_IF ||
-             lookAhead->tokenType == KW_WHILE ||
-             lookAhead->tokenType == KW_FOR ||
-             lookAhead->tokenType == KW_BEGIN) {
+  }
+  else if (lookAhead->tokenType == TK_IDENT ||
+           lookAhead->tokenType == KW_CALL ||
+           lookAhead->tokenType == KW_IF ||
+           lookAhead->tokenType == KW_WHILE ||
+           lookAhead->tokenType == KW_FOR ||
+           lookAhead->tokenType == KW_BEGIN)
+  {
     missingToken(SB_SEMICOLON, lookAhead->lineNo, lookAhead->colNo);
   }
 }
 
-void compileStatement(void) {
-  if(lookAhead->tokenType == TK_IDENT) {
+// phan tich mot cau lenh
+void compileStatement(void)
+{
+  if (lookAhead->tokenType == TK_IDENT)
+  {
     compileAssignSt();
-  } else if(lookAhead->tokenType == KW_CALL) {
+  }
+  else if (lookAhead->tokenType == KW_CALL)
+  {
     compileCallSt();
-  } else if(lookAhead->tokenType == KW_IF) {
+  }
+  else if (lookAhead->tokenType == KW_IF)
+  {
     compileIfSt();
-  } else if(lookAhead->tokenType == KW_WHILE) {
+  }
+  else if (lookAhead->tokenType == KW_WHILE)
+  {
     compileWhileSt();
-  } else if(lookAhead->tokenType == KW_FOR) {
+  }
+  else if (lookAhead->tokenType == KW_FOR)
+  {
     compileForSt();
-  } else if(lookAhead->tokenType == KW_BEGIN) {
+  }
+  else if (lookAhead->tokenType == KW_BEGIN)
+  {
     compileGroupSt();
   }
 }
 
-void compileAssignSt(void) {
+// phan tich mot cau lenh gan
+void compileAssignSt(void)
+{
   assert("Parsing an assign statement ....");
   eat(TK_IDENT);
   compileIndexes();
@@ -311,7 +395,9 @@ void compileAssignSt(void) {
   assert("Assign statement parsed ....");
 }
 
-void compileCallSt(void) {
+// phan tich mot cau lenh goi thu tuc
+void compileCallSt(void)
+{
   assert("Parsing a call statement ....");
   eat(KW_CALL);
   eat(TK_IDENT);
@@ -319,7 +405,9 @@ void compileCallSt(void) {
   assert("Call statement parsed ....");
 }
 
-void compileGroupSt(void) {
+// phan tich mot cau lenh nhom
+void compileGroupSt(void)
+{
   assert("Parsing a group statement ....");
   eat(KW_BEGIN);
   compileStatements();
@@ -327,23 +415,29 @@ void compileGroupSt(void) {
   assert("Group statement parsed ....");
 }
 
-void compileIfSt(void) {
+// phan tich mot cau lenh if
+void compileIfSt(void)
+{
   assert("Parsing an if statement ....");
   eat(KW_IF);
   compileCondition();
   eat(KW_THEN);
   compileStatement();
-  if (lookAhead->tokenType == KW_ELSE) 
+  if (lookAhead->tokenType == KW_ELSE)
     compileElseSt();
   assert("If statement parsed ....");
 }
 
-void compileElseSt(void) {
+// phan tich phan else cua cau lenh if
+void compileElseSt(void)
+{
   eat(KW_ELSE);
   compileStatement();
 }
 
-void compileWhileSt(void) {
+// phan tich mot cau lenh while
+void compileWhileSt(void)
+{
   assert("Parsing a while statement ....");
   eat(KW_WHILE);
   compileCondition();
@@ -352,7 +446,9 @@ void compileWhileSt(void) {
   assert("While statement parsed ....");
 }
 
-void compileForSt(void) {
+// phan tich mot cau lenh for
+void compileForSt(void)
+{
   assert("Parsing a for statement ....");
   eat(KW_FOR);
   eat(TK_IDENT);
@@ -365,8 +461,11 @@ void compileForSt(void) {
   assert("For statement parsed ....");
 }
 
-void compileArguments(void) {
-  if (lookAhead->tokenType == SB_LPAR) {
+// phan tich danh sach doi so
+void compileArguments(void)
+{
+  if (lookAhead->tokenType == SB_LPAR)
+  {
     eat(SB_LPAR);
     compileExpression();
     compileArguments2();
@@ -374,20 +473,28 @@ void compileArguments(void) {
   }
 }
 
-void compileArguments2(void) {
-  while (lookAhead->tokenType == SB_COMMA) {
+// phan tich phan con lai cua danh sach doi so
+void compileArguments2(void)
+{
+  while (lookAhead->tokenType == SB_COMMA)
+  {
     eat(SB_COMMA);
     compileExpression();
   }
 }
 
-void compileCondition(void) {
+// phan tich mot dieu kien
+void compileCondition(void)
+{
   compileExpression();
   compileCondition2();
 }
 
-void compileCondition2(void) {
-  switch (lookAhead->tokenType) {
+// phan tich phan toan tu so sanh va bieu thuc con lai
+void compileCondition2(void)
+{
+  switch (lookAhead->tokenType)
+  {
   case SB_EQ:
     eat(SB_EQ);
     compileExpression();
@@ -418,9 +525,12 @@ void compileCondition2(void) {
   }
 }
 
-void compileExpression(void) {
+// phan tich mot bieu thuc
+void compileExpression(void)
+{
   assert("Parsing an expression");
-  switch (lookAhead->tokenType) {
+  switch (lookAhead->tokenType)
+  {
   case SB_PLUS:
   case SB_MINUS:
     eat(lookAhead->tokenType);
@@ -433,40 +543,49 @@ void compileExpression(void) {
   assert("Expression parsed");
 }
 
-void compileExpression2(void) {
+// phan tich phan con lai cua bieu thuc
+void compileExpression2(void)
+{
   compileTerm();
   compileExpression3();
 }
 
-
-void compileExpression3(void) {
-  while (lookAhead->tokenType == SB_PLUS || lookAhead->tokenType == SB_MINUS) {
+void compileExpression3(void)
+{
+  while (lookAhead->tokenType == SB_PLUS || lookAhead->tokenType == SB_MINUS)
+  {
     eat(lookAhead->tokenType);
     compileTerm();
   }
 }
 
-void compileTerm(void) {
+void compileTerm(void)
+{
   compileFactor();
   compileTerm2();
 }
 
-void compileTerm2(void) {
-  while (lookAhead->tokenType == SB_TIMES || lookAhead->tokenType == SB_SLASH) {
+void compileTerm2(void)
+{
+  while (lookAhead->tokenType == SB_TIMES || lookAhead->tokenType == SB_SLASH)
+  {
     eat(lookAhead->tokenType);
     compileFactor();
   }
 }
 
-void compileFactor(void) {
-  switch (lookAhead->tokenType) {
+void compileFactor(void)
+{
+  switch (lookAhead->tokenType)
+  {
   case TK_NUMBER:
   case TK_CHAR:
     compileUnsignedConstant();
     break;
   case TK_IDENT:
     eat(TK_IDENT);
-    switch (lookAhead->tokenType) {
+    switch (lookAhead->tokenType)
+    {
     case SB_LSEL:
       compileIndexes();
       break;
@@ -488,15 +607,18 @@ void compileFactor(void) {
   }
 }
 
-void compileIndexes(void) {
-  while (lookAhead->tokenType == SB_LSEL) {
+void compileIndexes(void)
+{
+  while (lookAhead->tokenType == SB_LSEL)
+  {
     eat(SB_LSEL);
     compileExpression();
     eat(SB_RSEL);
   }
 }
 
-int compile(char *fileName) {
+int compile(char *fileName)
+{
   if (openInputStream(fileName) == IO_ERROR)
     return IO_ERROR;
 
@@ -509,5 +631,4 @@ int compile(char *fileName) {
   free(lookAhead);
   closeInputStream();
   return IO_SUCCESS;
-
 }
