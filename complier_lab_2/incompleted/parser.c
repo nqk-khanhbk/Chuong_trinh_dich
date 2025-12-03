@@ -12,6 +12,9 @@
 #include "error.h"
 
 Token *currentToken; // token hien tai
+//lookAhead là con trỏ tới “token kế tiếp” (look‑ahead token) — parser dùng nó để nhìn trước token kế tiếp mà không tiêu thụ ngay. 
+// Parser so sánh lookAhead->tokenType để quyết định đường đi của việc phân tích cú pháp; 
+// Khi muốn tiêu thụ token đó parser gọi eat(...) (hoặc scan() trực tiếp) để tiến token tới token kế tiếp.
 Token *lookAhead;    // token kế tiếp
 
 // ham khoi dong trinh phan tich
@@ -90,7 +93,7 @@ void compileBlock3(void)
   {
     eat(KW_VAR);
     compileVarDecl();  // phan tich khai bao bien dau tien
-    compileVarDecls(); // phan tich cac khai bao bien tiep theo
+    compileVarDecls(); // phan tich cac khai bao bien tiep theo đệ quy
     compileBlock4();   // phan tich khoi tiep theo
   }
   else
@@ -128,7 +131,7 @@ void compileConstDecl(void)
 {
   eat(TK_IDENT);
   eat(SB_EQ);
-  compileConstant();
+  compileConstant(); // phan tich mot hang so
   eat(SB_SEMICOLON);
 }
 
